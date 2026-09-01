@@ -1,0 +1,6 @@
+{
+  "appId": "com.yourname.lingo",
+  "appName": "Lingo",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
