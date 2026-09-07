@@ -1,0 +1,47 @@
+name: Build Android App Bundle
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install web dependencies
+        run: npm install
+
+      - name: Build the web app
+        run: npm run build
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build unsigned Android App Bundle
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bundleRelease
+
+      - name: Upload .aab as a downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-unsigned
+          path: android/app/build/outputs/bundle/release/app-release.aab
